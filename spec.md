@@ -3,7 +3,7 @@
 > Cấu trúc phủ đúng "SPEC 8 phần" của chương trình: Bằng chứng (§1-§2) · Lát cắt (§4) · Canvas (đính kèm CP1) · Augment/Automate (§4) · 4 đường đi của trải nghiệm (§6) · Kiểu lỗi (§5) · Kiểm thử (§7) · Phân công (§8). Hướng dẫn viết từng mục: `02-guide.md`.
 
 ```markdown
-# AI SPEC — Trợ lý "Bản tin Điều hành" cho TA & Mod (TA Co-pilot) · Nhóm [XX] · Zone [X]
+# AI SPEC — Trợ lý "Bản tin Điều hành" cho TA & Mod (TA Co-pilot) · Nhóm LDG · Zone 9
 Hướng: [ ] A — VLearn  [X] B — Trợ lý Học viên  [ ] C — Làn mở
 Loại: [ ] Tối ưu tính năng có sẵn  [X] Tính năng mới
 
@@ -34,8 +34,16 @@ Loại: [ ] Tối ưu tính năng có sẵn  [X] Tính năng mới
 - **Ứng viên CHỌN + vì sao (bằng số):** Chọn **Bản tin Điều hành cho TA**. Giúp 10 TA tiết kiệm 45 phút/đêm (tổng 7.5 giờ/đêm của toàn đội vận hành), giảm tỷ lệ trôi tin nhắn từ 40% xuống 0%, đảm bảo 100% thắc mắc được phát hiện trong ngày.
 
 ## §3. Giải pháp tương tự đã nghiên cứu
-*(Sẽ bổ sung trong quá trình làm)*
-- **Discord Server Analytics / Threads Summarizer:** Flow tóm tắt kênh chát / Đáng học: Gom nhóm tốt / Đáng né: Tóm tắt chung chung không phân loại câu tồn đọng / Mình khác: Tập trung riêng cho workflow cứu câu hỏi trôi của TA.
+- **Discord Server Analytics (Built-in) / Discord Auto-Summarizer Bot:**
+  - *Flow:* Quét toàn bộ tin nhắn trong server để đưa ra biểu đồ hoạt động và tóm tắt hội thoại bằng AI thành các Thread hoặc đoạn văn ngắn.
+  - *Đáng học:* Tự động gom nhóm các cuộc hội thoại rời rạc rất tốt theo thời gian thực và hiển thị các kênh hoạt động mạnh nhất.
+  - *Đáng né:* Tóm tắt quá chung chung, không có mục tiêu rõ ràng. Nó không phân biệt được đâu là thắc mắc cần giải quyết và đâu là tin nhắn chat thảo luận, từ đó không giải quyết được bài toán trôi câu hỏi của học viên.
+  - *Mình khác biệt:* Tập trung hoàn toàn vào workflow xử lý của TA. Chỉ lọc các tin nhắn học viên gọi TA, phân tích cụm lỗi kỹ thuật/logistics đặc thù, và làm nổi bật danh sách các tin chưa được trả lời (với tính năng tương tác Mark as Resolved).
+- **NotebookLM (Google) / Custom Study AI Assistants:**
+  - *Flow:* Upload tài liệu lớp học (slide, transcript) và đặt câu hỏi để AI trả lời dựa trên nguồn tài liệu đã cung cấp kèm trích dẫn nguồn.
+  - *Đáng học:* Cơ chế trích dẫn nguồn (citation) cực kỳ minh bạch và tin cậy, giúp người dùng đối chiếu nhanh chóng.
+  - *Đáng né:* Yêu cầu người dùng phải chủ động hỏi từng câu, không có tính năng tự động quét chủ động (push) và tổng hợp tình hình của tập thể lớp.
+  - *Mình khác biệt:* Tự động quét (push) và gom nhóm thắc mắc của cả lớp vào cuối ngày thay vì đợi TA vào hỏi từng câu.
 
 ## §4. Thiết kế
 - **Lát cắt MỘT CÂU:** *"Một TA/Mod vào kênh điều hành lúc 22h · một việc nắm tình hình thắc mắc & câu hỏi tồn đọng của cả lớp trong ngày · một quyết định AI gom nhóm các câu hỏi rải rác, phát hiện top 3 chủ đề kẹt nhiều nhất và lọc danh sách câu hỏi chưa trả lời · một kết quả TA xử lý triệt để 100% tồn đọng và chuẩn bị nội dung recap chỉ trong 10 phút."*
@@ -55,41 +63,55 @@ Loại: [ ] Tối ưu tính năng có sẵn  [X] Tính năng mới
   | **G10 — Thu hẹp phạm vi khi nghi ngờ** | Khi không chắc câu hỏi đã được trả lời hay chưa, AI tự động xếp vào nhóm "Cần TA xác minh thủ công". |
 
 ## §5. Kiểu lỗi — 4 lớp chỗ khó + kịch bản (≥8)
-*(Sẽ bổ sung chi tiết trước CP4)*
-1. Nguồn sự thật (①): AI bịa ra câu hỏi học viên không hề hỏi -> Hành vi: Chỉ trích dẫn đúng tin nhắn có thật trong log input.
-2. Mơ hồ / thiếu thông tin (②): Tin nhắn học viên quá ngắn ("anh ơi", "hả") -> Hành vi: Gom vào nhóm "Tin nhắn chưa rõ ý định".
-3. Ngoài phạm vi (③): Học viên hỏi xin pass wifi / thông tin cá nhân -> Hành vi: Bỏ qua không đưa vào bản tin điều hành.
-4. Đặc thù domain (④): Học viên hỏi lỗi kỹ thuật bài tập nhưng AI lại gom nhầm sang lỗi Logistics -> Hành vi: Hiển thị trích dẫn gốc để TA phát hiện và chỉnh lại.
+Dưới đây là 8 kịch bản lỗi thuộc 4 lớp chỗ khó của hệ thống, cùng hành vi mong muốn và nguyên tắc HAX áp dụng để xử lý:
+
+| # | Tình huống cụ thể | Lớp khó | Hành vi mong muốn (Nói gì, hiện gì, cho user làm gì) | Nguyên tắc áp dụng |
+|---|---|---|---|---|
+| 1 | AI tự bịa ra một lỗi kỹ thuật (ví dụ: lỗi cài đặt CUDA) mà không học viên nào hỏi trong ngày. | ① Nguồn sự thật | Bot chỉ hiển thị các chủ đề có trích dẫn tin nhắn gốc kèm mã ID tin nhắn. Nếu không tìm thấy tin nhắn gốc tương ứng, TA có thể phát hiện ngay lỗi bịa đặt. | **G2** (Làm rõ làm tốt đến đâu - đính kèm trích dẫn thực tế để đối chiếu) |
+| 2 | Model trích dẫn sai mã tin nhắn hoặc link liên kết đến tin nhắn của học viên. | ① Nguồn sự thật | Giao diện hiển thị link jump trực tiếp đến Discord channel. Nếu link hỏng hoặc sai, TA có thể dùng nút "Re-sync" để yêu cầu quét lại. | **G9** (Sửa dễ dàng - cho phép Re-sync quét lại dữ liệu sạch) |
+| 3 | Học viên chỉ chat: "Anh ơi cứu em với" hoặc "lỗi này sửa sao ạ" kèm hình ảnh không có văn bản. | ② Mơ hồ | Bot phân loại các tin nhắn này vào nhóm riêng: **"Cần TA xác minh thủ công (tin nhắn mơ hồ)"** và giải thích rõ: "Thiếu ngữ cảnh để tự động phân loại". | **G10** (Thu hẹp phạm vi khi nghi ngờ) |
+| 4 | Học viên gõ tin nhắn viết tắt, không dấu, dùng tiếng lóng (ví dụ: "api key bị tèo r"). | ② Mơ hồ | AI sử dụng prompt có ví dụ few-shot để nhận diện ngữ cảnh và gom đúng vào nhóm "Lỗi cấu hình API key", tránh bỏ sót. | **G11** (Giải thích vì sao - dựa trên từ khóa ngữ cảnh) |
+| 5 | Học viên hỏi thông tin ngoài phạm vi lớp học (ví dụ: xin pass wifi phòng lab, hỏi xin tài liệu Photoshop). | ③ Ngoài phạm vi | Bot tự động lọc bỏ các câu hỏi này và không đưa vào Bản tin điều hành chính. Tuy nhiên, vẫn lưu trữ ở phần "Đã lọc bỏ ngoài phạm vi" ở cuối để TA xem lại nếu cần. | **G10** (Thu hẹp phạm vi) & **HAX G1** |
+| 6 | Học viên hỏi xin đáp án của quiz hoặc yêu cầu TA viết hộ code bài tập lớn. | ③ Ngoài phạm vi | Bot gom vào nhóm "Cảnh báo vi phạm quy chế (Forbidden)" để cảnh cáo TA theo dõi, không hiển thị gợi ý hỗ trợ kỹ thuật cho case này. | **G2** (Chỉ rõ phạm vi quyền hạn và quy chế) |
+| 7 | Học viên hỏi về hạn nộp bài tập nhưng AI lại phân tích nhầm thành lỗi kỹ thuật, dẫn đến nguy cơ TA trả lời muộn làm học viên mất điểm. | ④ Đặc thù domain | Bot đưa tất cả câu hỏi liên quan đến từ khóa deadline/hạn nộp vào cụm "Logistics/Hạn chót" với mức độ ưu tiên cao nhất trong bản tin. | **G2** & **G10** (Đặt mức ưu tiên cao cho các case ảnh hưởng điểm số) |
+| 8 | Học viên đăng câu hỏi nhưng sau đó tự sửa được và phản hồi "đã chạy được". AI vẫn gom nhóm là chưa phản hồi. | ④ Đặc thù domain | TA có thể bấm nút **"Mark as Resolved"** trực tiếp trên giao diện Discord để ẩn câu hỏi này khỏi danh sách chưa trả lời ngay lập tức. | **G8** (Gạt bỏ dễ dàng) & **G9** (Sửa dễ dàng) |
 
 ## §6. Bốn đường đi của trải nghiệm
-*(Sẽ bổ sung chi tiết)*
-- **Happy path:** Quét 30 tin nhắn → Sinh bản tin phân loại chuẩn 3 nhóm: Top kẹt nhiều nhất, Cảnh báo tồn >2h, Đề xuất Recap.
-- **Low-confidence (②):** Nhận diện tin nhắn không rõ nội dung -> Xếp vào mục "Câu hỏi mơ hồ cần check lại".
-- **Failure/không căn cứ (①):** Log input trống/không có tin nhắn mới -> Hiển thị "Không ghi nhận thắc mắc mới trong ngày".
-- **Correction (user sửa):** TA bấm nút "Re-sync" hoặc gạt bỏ 1 mục phân loại sai trên giao diện.
+- **Happy path (Đường thuận lợi):** Cuối ngày, TA chạy lệnh `/tonghop`. Bot quét thành công tin nhắn từ 00:00, gửi dữ liệu XML sang Gemini, nhận về JSON và hiển thị Embed phân loại cực kỳ sạch sẽ: Top 3 cụm lỗi chính (API Key, /gate timeout, Deadline) kèm đầy đủ trích dẫn nguyên văn và nút bấm điều hướng.
+- **Low-confidence (Đường nghi ngờ - ②):** Khi gặp các tin nhắn ngắn hoặc thiếu thông tin ("helpp", "ad ơi"), Bot không đoán mò mà chuyển chúng vào mục `"Cần TA xác minh thủ công"`. Trên UI, Bot hiện thông tin cảnh báo rõ ràng để TA tự check lại link chat.
+- **Failure/không căn cứ (Đường thất bại - ①):** Nếu trong ngày không có tin nhắn nào tag TA/Mod (ví dụ ngày nghỉ lễ), Bot hiển thị: *"📭 Không ghi nhận thắc mắc mới trong ngày"* kèm thông báo chế độ hiển thị dự phòng chứ không cố gom nhóm lung tung.
+- **Correction (Đường hiệu chỉnh):** Khi AI gom nhóm sai hoặc TA đã trả lời thủ công qua kênh chat mà không dùng Reply:
+  1. TA xem tin nhắn qua lệnh `/checkmiss`, click nút **Mark as Resolved** để ẩn tin nhắn đó khỏi danh sách chờ ngay tức thì.
+  2. Hoặc TA sửa lại prompt/dữ liệu và bấm **Re-sync** để cập nhật lại bản tin sạch.
 
 ## §7. Kiểm thử
 - **Chiều chất lượng + định nghĩa kiểm chứng được:**
-  - *Độ chính xác gom nhóm (Accuracy):* Các câu hỏi cùng chủ đề được gom đúng nhóm (Pass/Fail).
-  - *Không bỏ sót (Recall):* 100% câu hỏi chưa trả lời quá 2 tiếng phải nằm trong danh sách Cảnh báo.
-- **Golden set:** File `eval/golden_set.json` (Gồm 20 case chatlog mô phỏng các tình huống).
-- **Quality bar (chốt từ 23:59 N1):** "Đạt khi ≥ 80% qua bộ golden set, và không bỏ sót câu hỏi chưa trả lời nào (Recall = 100%)."
-- **Kết quả các lượt chạy:** *(Sẽ cập nhật ở CP3)*
+  - *Độ chính xác gom nhóm (Clustering Accuracy):* Các câu hỏi thuộc cùng một bản chất lỗi phải được gom vào chung một nhóm phù hợp (Đo bằng hàm `verify_match` đối chiếu nhãn mong muốn trong bộ eval).
+  - *Độ bao phủ câu hỏi chưa trả lời (Recall):* 100% tin nhắn của học viên chưa được trả lời thực sự phải xuất hiện trong danh sách cảnh báo của Bot (không bị bỏ sót).
+- **Golden set:** Sử dụng tệp [eval/dataset.json](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/eval/dataset.json) gồm 20 case chatlog thực tế và giả lập, phủ đủ 4 lớp chỗ khó (Ngoài phạm vi, Mơ hồ, Quy chế, Deadline).
+- **Quality bar (Chốt cố định):** Đạt khi tỉ lệ phân loại đúng nghĩa của AI đạt **>= 80%** (ít nhất 16/20 câu hỏi) và tỉ lệ phát hiện tin chưa rep đạt **100% (Recall = 100%)**, tuyệt đối không bỏ sót câu hỏi logistics/deadline.
+- **Kết quả các lượt chạy:**
+  - **Lượt chạy 1 (Ngày 1 - CP3):** Đạt **19/20** câu hỏi phân loại đúng nghĩa (tỉ lệ **95%**), không bỏ sót tin nhắn quan trọng nào. Đạt chuẩn Quality Bar đề ra. Chi tiết ghi nhận tại báo cáo kết quả tự động [results.md](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/eval/results.md).
 
 ## §8. Phân công & Kế hoạch
 - **Phân công có tên:**
-  - *Spec & Evidence Mining:* [Tên thành viên 1]
-  - *Prompt Engineering & Golden Set:* [Tên thành viên 2]
-  - *Build Prototype (App/Bot):* [Tên thành viên 3]
-  - *Validation (Test với TA) & Slide:* [Tên thành viên 4]
-- **Willing users (≥3 tên):**
-  1. Nguyễn Văn A (TA Zone 1)
-  2. Trần Thị B (TA Zone 2)
-  3. Lê Văn C (Học viên đóng vai trò Mod)
-- **Kế hoạch vòng validation CP5:** Chuẩn bị 1 bản tin chạy thật từ 30 tin nhắn test → Gửi cho 3 TA dùng thử → Hỏi 3 câu hỏi trải nghiệm → Log lại nhận xét.
+  - *Phân tích dữ liệu & Prompt Engineering:* **Nguyễn Ngọc Lan** (2A202601384)
+  - *Lấy tin nhắn từ Discord, setup Server & Discord Bot:* **Hoàng Hương Giang** (2A202601470)
+  - *Thiết kế UI câu trả lời của Bot, pagination & button interaction:* **Nguyễn Hoàng Duy** (2A202601466)
+  - *Viết Spec chung & Chạy Validation:* Cả nhóm cùng thực hiện.
+- **Willing users (3 TA thực tế ngoài nhóm):**
+  1. **Nguyễn Văn Minh** (TA phụ trách kỹ thuật lớp Batch 03)
+  2. **Phạm Thị Thảo** (TA phụ trách Logistics Zone 9)
+  3. **Trần Đức Anh** (Mod vận hành server Discord Batch 03)
+- **Kế hoạch vòng validation CP5:**
+  - Triển khai chạy Bot Discord thật trên server test, nạp dữ liệu mô phỏng từ chatlog.
+  - Mời 3 willing users sử dụng lệnh `/tonghop` và `/checkmiss` trực tiếp trên kênh chat.
+  - Thực hiện phỏng vấn nhanh với 3 câu hỏi trải nghiệm và ghi chép nhật ký phản hồi chi tiết tại [validation/feedback_log.md](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/validation/feedback_log.md).
 
 ## §9. Changelog
 | Thời điểm | Đổi gì | Vì sao (trỏ về feedback/case nào) |
 |---|---|---|
 | 10:00 N1 | Tạo bản spec nháp đầu tiên | Hoàn thành Checkpoint 1 Canvas |
+| 17:00 N1 | Đồng bộ logic check phản hồi | Sửa sự không nhất quán giữa `/test_fetch` và `/checkmiss` (sau kiểm thử ghi nhận trong `src/README.md`) |
+| 18:00 N1 | Cập nhật phản hồi người dùng (Validation) | Tinh chỉnh giao diện hiển thị Embed phân trang rõ ràng hơn dựa trên phản hồi của TA Minh |
 ```

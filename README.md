@@ -1,5 +1,10 @@
 # Mini Hackathon AI — Batch 03
 
+**Nhóm: LDG (Zone 9)**
+* **Nguyễn Ngọc Lan** - 2A202601384: Làm hàm phân tích dữ liệu, Prompt Engineering và logic LLM clustering.
+* **Hoàng Hương Giang** - 2A202601470: Làm hàm lấy tin nhắn từ Discord, setup Server Discord, cấu hình Bot Discord.
+* **Nguyễn Hoàng Duy** - 2A202601466: Thiết kế giao diện (UI) câu trả lời của Bot, cài đặt pagination view và xử lý các sự kiện tương tác nút (button handlers).
+
 **SPEC → Prototype → Demo.** Đây không phải cuộc thi code — đây là cuộc thi **tư duy sản phẩm AI**.
 
 - Thời lượng: **1,5 ngày** (một ngày build + một buổi demo)

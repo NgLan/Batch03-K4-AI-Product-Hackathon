@@ -6,8 +6,8 @@ import os
 import datetime
 from typing import List, Dict, Any
 from dotenv import load_dotenv
-from src.services.llm_client import get_genai_client
-from src.services.clustering_service import cluster_messages
+from codebase.services.llm_client import get_genai_client
+from codebase.services.clustering_service import cluster_messages
 
 def load_dataset() -> List[Dict[str, Any]]:
     """Tải bộ dữ liệu câu hỏi từ file JSON."""

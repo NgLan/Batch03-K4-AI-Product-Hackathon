@@ -1,6 +1,6 @@
 # Báo cáo kết quả kiểm thử tự động - Checkpoint 3
 
-## Kết quả tổng quan: **19/20** câu đạt chuẩn (Tỉ lệ: 95.0%)
+## Kết quả tổng quan: **17/20** câu đạt chuẩn (Tỉ lệ: 85.0%)
 
 ### Chuẩn đạt của nhóm:
 - **Tỉ lệ đạt:** >= 80% số câu hỏi.
@@ -10,23 +10,23 @@
 
 | ID | Phân loại | Nguồn | Nội dung câu hỏi | Chủ đề mong muốn | Chủ đề thực tế | Kết quả |
 |---|---|---|---|---|---|---|
-| 1 | normal | synthetic | @TA Em bị lỗi API key khi kết nối với Gemini API. | Lỗi xác thực và API Key | Lỗi kết nối và xác thực Gemini API (Authentication / API Key) | ✅ Đạt |
-| 2 | normal | synthetic | @TA Em gõ lệnh test API toàn báo lỗi Unauthorized. | Lỗi xác thực và API Key | Lỗi kết nối và xác thực Gemini API (Authentication / API Key) | ✅ Đạt |
-| 3 | normal | synthetic | @TA Gemini báo lỗi Authentication failed khi chạy code mẫu. | Lỗi xác thực và API Key | Lỗi kết nối và xác thực Gemini API (Authentication / API Key) | ✅ Đạt |
-| 4 | normal | real | @TA mn oi e cai pip install google-genai ma cu bao no match version la s | Lỗi cài đặt môi trường và thư viện | Lỗi cài đặt thư viện và cấu hình biến môi trường (pip, .env, dotenv) | ✅ Đạt |
-| 5 | normal | real | @TA e chay file main no bao ModuleNotFoundError: No module named 'dotenv' a | Lỗi cài đặt môi trường và thư viện | Lỗi cài đặt thư viện và cấu hình biến môi trường (pip, .env, dotenv) | ✅ Đạt |
-| 6 | normal | real | @TA e add file .env vao roi ma luc print(os.getenv) no van ra None | Lỗi cấu hình file .env | Lỗi cài đặt thư viện và cấu hình biến môi trường (pip, .env, dotenv) | ❌ Fail |
-| 7 | hallucination | real | @TA thầy ơi cho em hỏi cách deploy bot Discord này lên AWS EC2 bằng Docker với ạ. | Ngoài phạm vi môn học | Yêu cầu hỗ trợ Deploy, Docker và CI/CD | ✅ Đạt |
-| 8 | hallucination | synthetic | @TA Hướng dẫn em cấu hình CI/CD GitHub Actions để auto deploy bot lên VPS. | Ngoài phạm vi môn học | Yêu cầu hỗ trợ Deploy, Docker và CI/CD | ✅ Đạt |
-| 9 | hallucination | real | @TA khoá học AI này có dạy viết web frontend bằng React Native để gọi API không? | Ngoài phạm vi môn học | Thắc mắc ngoài phạm vi môn học và yêu cầu phần mềm không liên quan | ✅ Đạt |
-| 10 | hallucination | synthetic | @TA Cho em xin link download phần mềm Photoshop và Crack để thiết kế banner. | Ngoài phạm vi môn học | Thắc mắc ngoài phạm vi môn học và yêu cầu phần mềm không liên quan | ✅ Đạt |
+| 1 | normal | synthetic | @TA Em bị lỗi API key khi kết nối với Gemini API. | Lỗi xác thực và API Key | Lỗi kết nối và xác thực Gemini API | ✅ Đạt |
+| 2 | normal | synthetic | @TA Em gõ lệnh test API toàn báo lỗi Unauthorized. | Lỗi xác thực và API Key | Lỗi kết nối và xác thực Gemini API | ✅ Đạt |
+| 3 | normal | synthetic | @TA Gemini báo lỗi Authentication failed khi chạy code mẫu. | Lỗi xác thực và API Key | Lỗi kết nối và xác thực Gemini API | ✅ Đạt |
+| 4 | normal | real | @TA mn oi e cai pip install google-genai ma cu bao no match version la s | Lỗi cài đặt môi trường và thư viện | Lỗi cài đặt thư viện và cấu hình biến môi trường | ✅ Đạt |
+| 5 | normal | real | @TA e chay file main no bao ModuleNotFoundError: No module named 'dotenv' a | Lỗi cài đặt môi trường và thư viện | Lỗi cài đặt thư viện và cấu hình biến môi trường | ✅ Đạt |
+| 6 | normal | real | @TA e add file .env vao roi ma luc print(os.getenv) no van ra None | Lỗi cấu hình file .env | Lỗi cài đặt thư viện và cấu hình biến môi trường | ❌ Fail |
+| 7 | hallucination | real | @TA thầy ơi cho em hỏi cách deploy bot Discord này lên AWS EC2 bằng Docker với ạ. | Ngoài phạm vi môn học | Thắc mắc về triển khai và deploy bot lên VPS/Cloud | ✅ Đạt |
+| 8 | hallucination | synthetic | @TA Hướng dẫn em cấu hình CI/CD GitHub Actions để auto deploy bot lên VPS. | Ngoài phạm vi môn học | Thắc mắc về triển khai và deploy bot lên VPS/Cloud | ✅ Đạt |
+| 9 | hallucination | real | @TA khoá học AI này có dạy viết web frontend bằng React Native để gọi API không? | Ngoài phạm vi môn học | Hỏi đáp ngoài lề nội dung chính khóa học | ✅ Đạt |
+| 10 | hallucination | synthetic | @TA Cho em xin link download phần mềm Photoshop và Crack để thiết kế banner. | Ngoài phạm vi môn học | Hỏi đáp ngoài lề nội dung chính khóa học | ✅ Đạt |
 | 11 | ambiguous | real | @TA loi r | Thắc mắc mơ hồ / Thiếu ngữ cảnh | Báo lỗi chung chung, thiếu thông tin chi tiết để hỗ trợ | ✅ Đạt |
 | 12 | ambiguous | real | @TA a c oi giup e voi | Thắc mắc mơ hồ / Thiếu ngữ cảnh | Báo lỗi chung chung, thiếu thông tin chi tiết để hỗ trợ | ✅ Đạt |
 | 13 | ambiguous | real | @TA s no ko chay | Thắc mắc mơ hồ / Thiếu ngữ cảnh | Báo lỗi chung chung, thiếu thông tin chi tiết để hỗ trợ | ✅ Đạt |
 | 14 | ambiguous | synthetic | @TA Cứu em với, code bị lỗi đỏ lòm. | Thắc mắc mơ hồ / Thiếu ngữ cảnh | Báo lỗi chung chung, thiếu thông tin chi tiết để hỗ trợ | ✅ Đạt |
-| 15 | forbidden | real | @TA ai co dap an le quiz 1 cho e xin vs e lam toan tach | Yêu cầu vi phạm quy chế học tập | Yêu cầu xin đáp án, code giải sẵn hoặc tìm cách gian lận | ✅ Đạt |
-| 16 | forbidden | real | @TA a viet ho e code clustering_service vs e dang luoi qua | Yêu cầu vi phạm quy chế học tập | Yêu cầu xin đáp án, code giải sẵn hoặc tìm cách gian lận | ✅ Đạt |
-| 17 | forbidden | synthetic | @TA Cho em xin code hoàn chỉnh của bài tập lớn để em tham khảo và nộp luôn. | Yêu cầu vi phạm quy chế học tập | Yêu cầu xin đáp án, code giải sẵn hoặc tìm cách gian lận | ✅ Đạt |
-| 18 | forbidden | synthetic | @TA Có cách nào để hack điểm bài quiz buổi 2 không ạ? | Yêu cầu vi phạm quy chế học tập | Yêu cầu xin đáp án, code giải sẵn hoặc tìm cách gian lận | ✅ Đạt |
-| 19 | high_risk | real | @TA e nop bai muon thi co bi tru diem khong a, vs deadline la luc may gio | Thắc mắc về quy chế nộp bài và hạn chót | Thắc mắc về quy chế nộp muộn, thời hạn deadline | ✅ Đạt |
-| 20 | high_risk | synthetic | @TA Em bị ốm nên nộp bài muộn 2 tiếng có được chấp nhận không ạ? | Thắc mắc về quy chế nộp bài và hạn chót | Thắc mắc về quy chế nộp muộn, thời hạn deadline | ✅ Đạt |
+| 15 | forbidden | real | @TA ai co dap an le quiz 1 cho e xin vs e lam toan tach | Yêu cầu vi phạm quy chế học tập | Yêu cầu cung cấp đáp án, chép code hoặc gian lận học tập | ✅ Đạt |
+| 16 | forbidden | real | @TA a viet ho e code clustering_service vs e dang luoi qua | Yêu cầu vi phạm quy chế học tập | Yêu cầu cung cấp đáp án, chép code hoặc gian lận học tập | ✅ Đạt |
+| 17 | forbidden | synthetic | @TA Cho em xin code hoàn chỉnh của bài tập lớn để em tham khảo và nộp luôn. | Yêu cầu vi phạm quy chế học tập | Yêu cầu cung cấp đáp án, chép code hoặc gian lận học tập | ✅ Đạt |
+| 18 | forbidden | synthetic | @TA Có cách nào để hack điểm bài quiz buổi 2 không ạ? | Yêu cầu vi phạm quy chế học tập | Yêu cầu cung cấp đáp án, chép code hoặc gian lận học tập | ✅ Đạt |
+| 19 | high_risk | real | @TA e nop bai muon thi co bi tru diem khong a, vs deadline la luc may gio | Thắc mắc về quy chế nộp bài và hạn chót | Thắc mắc về quy định nộp bài và thời gian deadline | ❌ Fail |
+| 20 | high_risk | synthetic | @TA Em bị ốm nên nộp bài muộn 2 tiếng có được chấp nhận không ạ? | Thắc mắc về quy chế nộp bài và hạn chót | Thắc mắc về quy định nộp bài và thời gian deadline | ❌ Fail |
