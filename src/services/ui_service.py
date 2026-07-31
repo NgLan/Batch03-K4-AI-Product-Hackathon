@@ -76,40 +76,66 @@ class MessagePaginationView(discord.ui.View):
         await interaction.response.edit_message(embed=self.get_embed(), view=self)
 
 
-def build_topics_summary_embed(top_issues: List[Dict[str, Any]]) -> discord.Embed:
-    """Tạo Embed tổng hợp toàn bộ chủ đề thắc mắc kèm tin nhắn liên quan, mỗi chủ đề một field.
+class TopicPaginationView(discord.ui.View):
+    """View phân trang hiển thị từng chủ đề thắc mắc, mỗi trang một chủ đề."""
 
-    Args:
-        top_issues: Danh sách chủ đề đã gom cụm, mỗi phần tử gồm topic/count/messages.
+    MAX_MESSAGES_PER_PAGE = 4
 
-    Returns:
-        Embed hiển thị toàn bộ chủ đề trong một khung duy nhất (không phân trang).
-    """
-    if not top_issues:
-        return discord.Embed(
-            title="Chủ đề thắc mắc",
-            description="Không có chủ đề nào cần tổng hợp!",
-            color=discord.Color.green()
-        )
+    def __init__(self, top_issues: List[Dict[str, Any]]):
+        super().__init__(timeout=180)
+        self.top_issues = top_issues
+        self.current_index = 0
+        self.update_buttons()
 
-    MAX_FIELDS = 25
-    truncated = len(top_issues) > MAX_FIELDS
-    embed = discord.Embed(
-        title=f"📋 Chủ đề thắc mắc hôm nay ({len(top_issues)} chủ đề)",
-        color=discord.Color.blue()
-    )
-    for issue in top_issues[:MAX_FIELDS]:
-        topic = issue.get("topic", "Không rõ chủ đề")[:256]
+    def update_buttons(self) -> None:
+        """Cập nhật trạng thái hiển thị của các nút phân trang."""
+        self.children[0].disabled = (self.current_index == 0)
+        self.children[1].disabled = (self.current_index >= len(self.top_issues) - 1)
+
+    def get_embed(self) -> discord.Embed:
+        """Tạo đối tượng Embed mô tả chi tiết chủ đề hiện tại."""
+        if not self.top_issues:
+            return discord.Embed(
+                title="Chủ đề thắc mắc",
+                description="Không có chủ đề nào cần tổng hợp!",
+                color=discord.Color.green()
+            )
+
+        issue = self.top_issues[self.current_index]
+        topic = issue.get("topic", "Không rõ chủ đề")
         messages = issue.get("messages", [])
-        lines = [
-            f"{i + 1}. **{m['author']}** (#{m['channel_name']}): {m['content'][:100]} [Link]({m['jump_url']})"
-            for i, m in enumerate(messages)
-        ]
-        value = "\n".join(lines) if lines else "Không có tin nhắn."
-        if len(value) > 1024:
-            value = value[:1000] + "\n... (còn nữa)"
-        embed.add_field(name=f"{topic} ({len(messages)} tin)", value=value, inline=False)
+        shown = messages[:self.MAX_MESSAGES_PER_PAGE]
 
-    if truncated:
-        embed.set_footer(text=f"Chỉ hiển thị {MAX_FIELDS}/{len(top_issues)} chủ đề đầu tiên.")
-    return embed
+        lines = []
+        for i, m in enumerate(shown):
+            mark = "✅ " if m.get("is_replied") else ""
+            lines.append(f"{mark}{i + 1}. **{m['author']}** (#{m['channel_name']}): {m['content'][:150]} [Link]({m['jump_url']})")
+        remaining = len(messages) - len(shown)
+        if remaining > 0:
+            lines.append(f"... còn {remaining} tin nữa trong chủ đề này")
+
+        embed = discord.Embed(
+            title=topic,
+            description="\n".join(lines) if lines else "Không có tin nhắn.",
+            color=discord.Color.blue()
+        )
+        embed.set_footer(
+            text=f"Chủ đề {self.current_index + 1}/{len(self.top_issues)} · {len(messages)} tin · ✅ = đã trả lời"
+        )
+        return embed
+
+    @discord.ui.button(label="◀ Trước", style=discord.ButtonStyle.grey)
+    async def prev_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Xử lý sự kiện nút Trước được bấm."""
+        if self.current_index > 0:
+            self.current_index -= 1
+        self.update_buttons()
+        await interaction.response.edit_message(embed=self.get_embed(), view=self)
+
+    @discord.ui.button(label="Sau ▶", style=discord.ButtonStyle.grey)
+    async def next_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Xử lý sự kiện nút Sau được bấm."""
+        if self.current_index < len(self.top_issues) - 1:
+            self.current_index += 1
+        self.update_buttons()
+        await interaction.response.edit_message(embed=self.get_embed(), view=self)

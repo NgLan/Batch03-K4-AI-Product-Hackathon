@@ -49,13 +49,22 @@ def cluster_messages(messages: List[Dict[str, Any]]) -> Dict[str, Any]:
     student_msgs = [m for m in messages if not m.get("is_ta", False)]
     if not student_msgs:
         return {"top_issues": []}
-        
+
     xml_data = f"<student_messages>\n" + \
                "\n".join(serialize_message(m) for m in student_msgs) + \
                "\n</student_messages>"
-    
+
     response_text = llm_client.generate_text(
         prompt=xml_data,
         system_instruction=SYSTEM_PROMPT
     )
-    return json.loads(clean_json_text(response_text))
+    result = json.loads(clean_json_text(response_text))
+
+    # Gemini không được yêu cầu trả về is_replied, nên gắn lại từ dữ liệu gốc
+    # (nguồn sự thật) thay vì tin vào model, để hiển thị đúng trạng thái đã rep.
+    id_to_replied = {m["message_id"]: m.get("is_replied", False) for m in student_msgs}
+    for issue in result.get("top_issues", []):
+        for m in issue.get("messages", []):
+            m["is_replied"] = id_to_replied.get(m["message_id"], False)
+
+    return result
