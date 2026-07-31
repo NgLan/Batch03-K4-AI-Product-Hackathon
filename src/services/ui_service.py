@@ -74,3 +74,42 @@ class MessagePaginationView(discord.ui.View):
             self.current_index += 1
         self.update_buttons()
         await interaction.response.edit_message(embed=self.get_embed(), view=self)
+
+
+def build_topics_summary_embed(top_issues: List[Dict[str, Any]]) -> discord.Embed:
+    """Tạo Embed tổng hợp toàn bộ chủ đề thắc mắc kèm tin nhắn liên quan, mỗi chủ đề một field.
+
+    Args:
+        top_issues: Danh sách chủ đề đã gom cụm, mỗi phần tử gồm topic/count/messages.
+
+    Returns:
+        Embed hiển thị toàn bộ chủ đề trong một khung duy nhất (không phân trang).
+    """
+    if not top_issues:
+        return discord.Embed(
+            title="Chủ đề thắc mắc",
+            description="Không có chủ đề nào cần tổng hợp!",
+            color=discord.Color.green()
+        )
+
+    MAX_FIELDS = 25
+    truncated = len(top_issues) > MAX_FIELDS
+    embed = discord.Embed(
+        title=f"📋 Chủ đề thắc mắc hôm nay ({len(top_issues)} chủ đề)",
+        color=discord.Color.blue()
+    )
+    for issue in top_issues[:MAX_FIELDS]:
+        topic = issue.get("topic", "Không rõ chủ đề")[:256]
+        messages = issue.get("messages", [])
+        lines = [
+            f"{i + 1}. **{m['author']}** (#{m['channel_name']}): {m['content'][:100]} [Link]({m['jump_url']})"
+            for i, m in enumerate(messages)
+        ]
+        value = "\n".join(lines) if lines else "Không có tin nhắn."
+        if len(value) > 1024:
+            value = value[:1000] + "\n... (còn nữa)"
+        embed.add_field(name=f"{topic} ({len(messages)} tin)", value=value, inline=False)
+
+    if truncated:
+        embed.set_footer(text=f"Chỉ hiển thị {MAX_FIELDS}/{len(top_issues)} chủ đề đầu tiên.")
+    return embed
