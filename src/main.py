@@ -59,7 +59,7 @@ async def get_or_run_analysis(bot: commands.Bot, limit: int) -> Dict[str, Any]:
         ch = bot.get_channel(ch_id)
         if ch:
             # Lấy tin nhắn của từng kênh và gom chung vào mảng msgs
-            ch_msgs = await fetch_channel_messages(ch, limit, after=start_of_today)
+            ch_msgs = await fetch_channel_messages(ch, limit, after=start_of_today,  oldest_first=False)
             msgs.extend(ch_msgs)
             
     from src.services.unanswered_service import filter_unanswered_messages
@@ -75,7 +75,7 @@ async def process_messages_and_send(interaction: discord.Interaction, is_cluster
     """Xử lý yêu cầu phân tích và hiển thị kết quả phân trang."""
     await interaction.response.defer()
     try:
-        res = await get_or_run_analysis(bot, limit=50)
+        res = await get_or_run_analysis(bot, limit=500)
         if is_clustering:
             embed = build_topics_summary_embed(res.get("top_issues", []))
             await interaction.followup.send(embed=embed)

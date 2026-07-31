@@ -109,20 +109,20 @@ def transform_message(msg: discord.Message, all_msgs: List[discord.Message]) -> 
 #     print(f"Fetched {len(result)} messages Cần hỗ trợ from channel {channel.name}")
 #     return result
 
-async def fetch_channel_messages(channel: Any, limit: int = 50, after: Any = None) -> List[Dict[str, Any]]:
+async def fetch_channel_messages(channel: Any, limit: int = 50, after: Any = None, oldest_first: bool = False) -> List[Dict[str, Any]]:
     """Lấy danh sách tin nhắn từ một channel Discord và chuyển đổi định dạng.
 
     Args:
         channel: Kênh chat Discord.
         limit: Số lượng tin nhắn tối đa cần lấy.
         after: Chỉ lấy tin nhắn sau mốc thời gian này.
-
+         oldest_first: Nếu False, sẽ lấy từ mới nhất lùi dần về cũ.
     Returns:
         Danh sách tin nhắn định dạng dict chuẩn.
     """
     history_msgs = []
     # Truyền thêm tham số after vào hàm history
-    async for m in channel.history(limit=limit, after=after):
+    async for m in channel.history(limit=limit, after=after, oldest_first=oldest_first):
         history_msgs.append(m)
         
     print(f"📥 [Kênh {channel.name}] Kéo về {len(history_msgs)} tin nhắn gốc.")  
