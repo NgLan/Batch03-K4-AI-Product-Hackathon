@@ -1,6 +1,52 @@
 # Hướng dẫn Vận hành & Luồng Hoạt động (TA Co-pilot Bot)
 
-Tài liệu này tổng hợp ngắn gọn luồng xử lý và các kịch bản kiểm thử của Bot để phục vụ việc thuyết trình và nắm bắt nhanh dự án.
+Tài liệu này tổng hợp hướng dẫn cài đặt, luồng xử lý và các kịch bản kiểm thử của Bot để phục vụ việc thiết lập, thuyết trình và nắm bắt nhanh dự án.
+
+---
+
+## Hướng dẫn Cài đặt & Khởi chạy (Setup & Run Guide)
+
+Thực hiện các bước sau tại thư mục gốc của dự án để chuẩn bị môi trường và chạy Bot:
+
+### Bước 1: Khởi tạo môi trường ảo (Virtual Environment)
+```bash
+# Tạo venv có tên là 'venv'
+python -m venv venv
+```
+
+### Bước 2: Kích hoạt môi trường ảo
+* **Trên Windows (PowerShell):**
+  ```powershell
+  .\venv\Scripts\Activate.ps1
+  ```
+* **Trên macOS/Linux:**
+  ```bash
+  source venv/bin/activate
+  ```
+
+### Bước 3: Cài đặt các thư viện cần thiết
+```bash
+pip install -r requirements.txt
+```
+
+### Bước 4: Thiết lập các biến môi trường
+Tạo tệp `.env` tại thư mục gốc của dự án (hoặc đổi tên file `example.env` thành `.env`) và điền các API key:
+```env
+DISCORD_TOKEN=your_discord_bot_token_here
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+### Bước 5: Khởi chạy Bot Discord
+Chạy lệnh sau từ thư mục gốc của dự án để khởi động bot (đã cấu hình UTF-8 để hiển thị tiếng Việt chính xác):
+* **Trên Windows (PowerShell):**
+  ```powershell
+  $env:PYTHONIOENCODING="utf-8"
+  python -m src.main
+  ```
+* **Trên macOS/Linux:**
+  ```bash
+  PYTHONIOENCODING=utf-8 python -m src.main
+  ```
 
 ---
 
