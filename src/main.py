@@ -13,7 +13,7 @@ from src.services.discord_service import fetch_channel_messages
 from src.services.cache_service import get_cached_analysis, save_to_cache
 from src.services.resolve_service import load_resolved_ids
 from src.main_pipeline import filter_resolved_from_results
-from src.services.ui_service import MessagePaginationView, build_topics_summary_embed
+from src.services.ui_service import MessagePaginationView, TopicPaginationView
 from src.config import TARGET_CHANNELS
 
 load_dotenv()
@@ -77,8 +77,8 @@ async def process_messages_and_send(interaction: discord.Interaction, is_cluster
     try:
         res = await get_or_run_analysis(bot, limit=500)
         if is_clustering:
-            embed = build_topics_summary_embed(res.get("top_issues", []))
-            await interaction.followup.send(embed=embed)
+            view = TopicPaginationView(res.get("top_issues", []))
+            await interaction.followup.send(embed=view.get_embed(), view=view)
         else:
             messages = res.get("unanswered_over_2h", [])
             view = MessagePaginationView(messages, title_prefix="Tin chưa trả lời")
