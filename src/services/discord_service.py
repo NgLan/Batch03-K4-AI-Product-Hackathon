@@ -133,7 +133,8 @@ async def fetch_channel_messages(channel: Any, limit: int = 50, after: Any = Non
             continue
         if is_ta_user(m.author):
             continue
-        if is_calling_ta(m) and not check_replied(m, history_msgs):
+        # if is_calling_ta(m) and not check_replied(m, history_msgs):
+        if is_calling_ta(m):
             result.append(transform_message(m, history_msgs))
             
     print(f"✅ [Kênh {channel.name}] Lọc được tin nhắn hợp lệ (gọi TA, chưa rep). {result}")
