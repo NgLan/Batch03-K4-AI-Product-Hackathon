@@ -75,7 +75,7 @@ async def test_fetch(interaction: discord.Interaction) -> None:
         )
     await interaction.followup.send(rep)
 
-@bot.tree.command(name="tonghop", description="[Dành cho TA] Tổng hợp tin nhắn")
+@bot.tree.command(name="tonghop", description="[Dành cho TA] Tổng hợp tin nhắn trong ngày hôm nay")
 @app_commands.default_permissions(manage_messages=True) 
 async def tonghop(interaction: discord.Interaction) -> None:
     """Lệnh slash /tonghop tổng hợp tin nhắn."""
