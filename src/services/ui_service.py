@@ -120,7 +120,7 @@ class TopicPaginationView(discord.ui.View):
             color=discord.Color.blue()
         )
         embed.set_footer(
-            text=f"Chủ đề {self.current_index + 1}/{len(self.top_issues)} · {len(messages)} tin · ✅ = đã trả lời"
+            text=f"Chủ đề {self.current_index + 1}/{len(self.top_issues)} · ✅ = đã trả lời"
         )
         return embed
 
