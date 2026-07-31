@@ -3,6 +3,7 @@
 
 import discord
 from typing import List, Dict, Any
+from src.config import TARGET_CHANNELS, TA_ROLE_IDS
 
 def is_ta_user(member: Any) -> bool:
     """Kiểm tra xem người dùng có phải là TA/Mod hay không.
@@ -14,38 +15,52 @@ def is_ta_user(member: Any) -> bool:
         True nếu là TA/Mod, ngược lại False.
     """
     if hasattr(member, "roles"):
-        for role in member.roles:
-            if "TA" in role.name.upper() or "MOD" in role.name.upper():
-                return True
+        if hasattr(member, "roles"):
+            return any(role.id in TA_ROLE_IDS for role in member.roles)
     return False
 
+# def check_replied(msg: discord.Message, all_msgs: List[discord.Message]) -> bool:
+#     """Kiểm tra xem tin nhắn đã có câu trả lời từ TA hoặc người khác chưa.
+
+#     Args:
+#         msg: Tin nhắn cần kiểm tra.
+#         all_msgs: Danh sách toàn bộ tin nhắn trong kênh.
+
+#     Returns:
+#         True nếu đã được phản hồi, ngược lại False.
+#     """
+#     msg_idx = all_msgs.index(msg)
+#     # Duyệt các tin nhắn gửi sau tin nhắn này
+#     for post_msg in all_msgs[:msg_idx]:
+#         if post_msg.reference and post_msg.reference.message_id == msg.id:
+#             return True
+#         # Nếu có tin nhắn của TA gửi sau đó trong cùng kênh
+#         if is_ta_user(post_msg.author) and post_msg.created_at > msg.created_at:
+#             return True
+#     return False
 def check_replied(msg: discord.Message, all_msgs: List[discord.Message]) -> bool:
-    """Kiểm tra xem tin nhắn đã có câu trả lời từ TA hoặc người khác chưa.
-
-    Args:
-        msg: Tin nhắn cần kiểm tra.
-        all_msgs: Danh sách toàn bộ tin nhắn trong kênh.
-
-    Returns:
-        True nếu đã được phản hồi, ngược lại False.
-    """
-    msg_idx = all_msgs.index(msg)
-    # Duyệt các tin nhắn gửi sau tin nhắn này
-    for post_msg in all_msgs[:msg_idx]:
-        if post_msg.reference and post_msg.reference.message_id == msg.id:
-            return True
-        # Nếu có tin nhắn của TA gửi sau đó trong cùng kênh
-        if is_ta_user(post_msg.author) and post_msg.created_at > msg.created_at:
-            return True
+    """Kiểm tra xem tin nhắn đã có câu trả lời từ TA hoặc người khác chưa."""
+    for post_msg in all_msgs:
+        # Chỉ xét các tin nhắn gửi SAU tin nhắn hiện tại
+        if post_msg.created_at > msg.created_at:
+            
+            # Chỉ trả về True khi thỏa mãn ĐỒNG THỜI 2 điều kiện:
+            # 1. Có reference trỏ đúng vào ID của tin nhắn học viên (Dùng tính năng Reply)
+            # 2. Người thực hiện hành động Reply đó phải là TA/Mod
+            if post_msg.reference and post_msg.reference.message_id == msg.id and is_ta_user(post_msg.author):
+                return True
+                
     return False
+
 
 def is_calling_ta(msg: discord.Message) -> bool:
     """Kiểm tra xem tin nhắn có gọi đến TA hoặc chứa '@TA'/'@Mod' không."""
     content_upper = msg.content.upper()
     if "@TA" in content_upper or "@MOD" in content_upper:
         return True
-    if any("TA" in r.name.upper() or "MOD" in r.name.upper() for r in msg.role_mentions):
+    if any(role.id in TA_ROLE_IDS for role in msg.role_mentions):
         return True
+    
     return any(is_ta_user(u) for u in msg.mentions)
 
 def transform_message(msg: discord.Message, all_msgs: List[discord.Message]) -> Dict[str, Any]:
@@ -69,20 +84,49 @@ def transform_message(msg: discord.Message, all_msgs: List[discord.Message]) -> 
         "is_replied": check_replied(msg, all_msgs)
     }
 
-async def fetch_channel_messages(channel: Any, limit: int = 50) -> List[Dict[str, Any]]:
+# async def fetch_channel_messages(channel: Any, limit: int = 50, after: Any = None) -> List[Dict[str, Any]]:
+#     """Lấy danh sách tin nhắn từ một channel Discord và chuyển đổi định dạng.
+
+#     Args:
+#         channel: Kênh chat Discord.
+#         limit: Số lượng tin nhắn tối đa cần lấy.
+
+#     Returns:
+#         Danh sách tin nhắn định dạng dict chuẩn.
+#     """
+#     history_msgs = []
+#     async for m in channel.history(limit=limit):
+#         history_msgs.append(m)
+#     print(f"Fetched {len(history_msgs)} messages from channel {channel.name}")  
+#     result = []
+#     for m in history_msgs:
+#         if m.author.bot:
+#             continue
+#         if is_ta_user(m.author):
+#             continue
+#         if is_calling_ta(m) and not check_replied(m, history_msgs):
+#             result.append(transform_message(m, history_msgs))
+#     print(f"Fetched {len(result)} messages Cần hỗ trợ from channel {channel.name}")
+#     return result
+
+async def fetch_channel_messages(channel: Any, limit: int = 50, after: Any = None) -> List[Dict[str, Any]]:
     """Lấy danh sách tin nhắn từ một channel Discord và chuyển đổi định dạng.
 
     Args:
         channel: Kênh chat Discord.
         limit: Số lượng tin nhắn tối đa cần lấy.
+        after: Chỉ lấy tin nhắn sau mốc thời gian này.
 
     Returns:
         Danh sách tin nhắn định dạng dict chuẩn.
     """
     history_msgs = []
-    async for m in channel.history(limit=limit):
+    # Truyền thêm tham số after vào hàm history
+    async for m in channel.history(limit=limit, after=after):
         history_msgs.append(m)
         
+    print(f"📥 [Kênh {channel.name}] Kéo về {len(history_msgs)} tin nhắn gốc.")  
+    
     result = []
     for m in history_msgs:
         if m.author.bot:
@@ -91,4 +135,6 @@ async def fetch_channel_messages(channel: Any, limit: int = 50) -> List[Dict[str
             continue
         if is_calling_ta(m) and not check_replied(m, history_msgs):
             result.append(transform_message(m, history_msgs))
+            
+    print(f"✅ [Kênh {channel.name}] Lọc được tin nhắn hợp lệ (gọi TA, chưa rep). {result}")
     return result

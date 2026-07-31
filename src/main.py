@@ -14,6 +14,7 @@ from src.services.cache_service import get_cached_analysis, save_to_cache
 from src.services.resolve_service import load_resolved_ids
 from src.main_pipeline import filter_resolved_from_results
 from src.services.ui_service import MessagePaginationView
+from src.config import TARGET_CHANNELS
 
 load_dotenv()
 intents = discord.Intents.default()
@@ -27,12 +28,40 @@ async def on_ready() -> None:
     await bot.tree.sync() 
     print(f'Bot {bot.user} đã online và sẵn sàng chạy thật!')
 
-async def get_or_run_analysis(channel: Any, limit: int) -> Dict[str, Any]:
-    """Lấy dữ liệu phân tích từ cache hoặc chạy phân tích mới nếu hết hạn."""
+# async def get_or_run_analysis(channel: Any, limit: int) -> Dict[str, Any]:
+#     """Lấy dữ liệu phân tích từ cache hoặc chạy phân tích mới nếu hết hạn."""
+#     cached = get_cached_analysis()
+#     if cached:
+#         return filter_resolved_from_results(cached)
+#     msgs = await fetch_channel_messages(channel, limit)
+#     from src.services.unanswered_service import filter_unanswered_messages
+#     from src.services.clustering_service import cluster_messages
+#     raw = {
+#         "unanswered_over_2h": filter_unanswered_messages(msgs),
+#         "top_issues": cluster_messages(msgs).get("top_issues", [])
+#     }
+#     save_to_cache(raw)
+#     return filter_resolved_from_results(raw)
+
+async def get_or_run_analysis(bot: commands.Bot, limit: int) -> Dict[str, Any]:
+    """Lấy dữ liệu phân tích từ cache hoặc chạy phân tích mới cho TẤT CẢ các kênh."""
     cached = get_cached_analysis()
     if cached:
         return filter_resolved_from_results(cached)
-    msgs = await fetch_channel_messages(channel, limit)
+    # Tính mốc thời gian 00:00 hôm nay (Theo giờ Việt Nam GMT+7)
+    now_utc = datetime.now(timezone.utc)
+    vn_tz = timezone(timedelta(hours=7))
+    start_of_today = datetime.combine(now_utc.astimezone(vn_tz).date(), time.min).replace(tzinfo=vn_tz)
+
+    msgs = []
+    # Quét qua toàn bộ ID kênh trong cấu hình
+    for ch_id in TARGET_CHANNELS:
+        ch = bot.get_channel(ch_id)
+        if ch:
+            # Lấy tin nhắn của từng kênh và gom chung vào mảng msgs
+            ch_msgs = await fetch_channel_messages(ch, limit, after=start_of_today)
+            msgs.extend(ch_msgs)
+            
     from src.services.unanswered_service import filter_unanswered_messages
     from src.services.clustering_service import cluster_messages
     raw = {
@@ -46,7 +75,7 @@ async def process_messages_and_send(interaction: discord.Interaction, is_cluster
     """Xử lý yêu cầu phân tích và hiển thị kết quả phân trang."""
     await interaction.response.defer()
     try:
-        res = await get_or_run_analysis(interaction.channel, limit=50)
+        res = await get_or_run_analysis(bot, limit=50)
         if is_clustering:
             flat = [{**m, "topic": i["topic"]} for i in res.get("top_issues", []) for m in i.get("messages", [])]
             messages, title = flat, "Chủ đề thắc mắc"
