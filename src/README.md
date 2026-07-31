@@ -49,3 +49,26 @@ graph TD
 * **Case 4: Caching & Manual Override (Đồng bộ cache và nút bấm)**
   * *Mô tả:* TA bấm nút `Mark as Resolved` cho một tin nhắn và chạy lại lệnh phân tích khi cache 10 phút vẫn còn hiệu lực.
   * *Kết quả:* Tin nhắn vừa giải quyết biến mất ngay lập tức nhờ bộ lọc động sau khi load cache, đảm bảo TA khác không bị trùng lặp công việc.
+
+---
+
+## 3. Hệ thống đánh giá kiểm thử tự động (Evaluation System - Checkpoint 3)
+
+Để đo lường khách quan năng lực phân loại của AI, hệ thống được cấu hình bộ kiểm thử tự động tại thư mục [eval/](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/eval):
+
+* **Quyết định của AI:** AI quyết định gom nhóm các câu hỏi chưa trả lời của học viên gửi tới TA thành các cụm lỗi/chủ đề và xác định tiêu đề đại diện (Model: **gemini-3.5-flash**).
+* **Cấu trúc bộ câu thử ([dataset.json](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/eval/dataset.json)):**
+  - **Số lượng:** **20 câu** (đáp ứng đúng tiêu chuẩn tối thiểu).
+  - **Bao phủ 4 tình huống AI dễ sai nhất:** Gồm câu hỏi ngoài phạm vi (Hallucination), câu hỏi mơ hồ, câu hỏi đòi đáp án/hack (Forbidden), và thắc mắc nộp bài (High risk) - mỗi loại tối thiểu 2 câu.
+  - **Nguồn gốc thực tế:** **11 câu** (vượt yêu cầu tối thiểu 5 câu) được trích từ log Discord thực tế của khóa học, chứa lỗi viết tắt, tiếng lóng, không dấu.
+* **Chuẩn đạt cam kết:**
+  - Tỉ lệ đạt toàn bộ: **>= 80%**.
+  - **Zero-tolerance:** Không được phép phân loại sai hoặc bịa đặt thông tin đối với các thắc mắc về Hạn chót nộp bài (Deadline) và Vi phạm quy chế học tập.
+* **Kết quả chạy thử nghiệm lần đầu:**
+  - Đạt **19/20** câu (Tỉ lệ chính xác: **95%**), hoàn toàn vượt chuẩn cam kết đề ra.
+  - Xem chi tiết bảng phân tích đạt/fail tại [results.md](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/eval/results.md).
+* **Lệnh chạy kiểm thử:**
+  ```bash
+  $env:PYTHONIOENCODING="utf-8"
+  python -m eval.run_eval
+  ```

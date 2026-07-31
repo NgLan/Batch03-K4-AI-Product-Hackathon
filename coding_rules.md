@@ -41,3 +41,4 @@ Dưới đây là bảng tự đánh giá của toàn bộ các file nguồn tro
 | [services/ui_service.py](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/src/services/ui_service.py) | Phân trang tương tác và nút "Mark as Resolved" của Bot. | ~95 dòng | `resolve_button` (14 dòng) | **Đạt** |
 | [prompts/clustering_prompt.py](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/src/prompts/clustering_prompt.py) | Lưu trữ System Prompt định dạng XML bảo mật cho LLM. | ~44 dòng | Không chứa hàm | **Đạt** |
 | [run_pipeline_example.py](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/src/run_pipeline_example.py) | Script kiểm thử tích hợp (Integration Test) dữ liệu giả lập. | ~94 dòng | `create_mock_messages` (16 dòng) | **Đạt** |
+| [eval/run_eval.py](file:///d:/VinAI/Batch03-K4-AI-Product-Hackathon/eval/run_eval.py) | Script đánh giá tự động (Evaluation Run) cho Checkpoint 3. | ~67 dòng | `verify_match` (18 dòng) | **Đạt** |
